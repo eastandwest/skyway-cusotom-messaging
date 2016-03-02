@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+    <head>
+        <title>camera</title>
+        <meta charset='utf8'>
+        <script src="https://skyway.io/dist/0.3/peer.js"></script>
+        <script src="../bower_components/eventemitter3/index.js"></script>   
+        <script src="../lib/peer_custom_mesg.js"></script>   
+    </head>
+    <body>
+        <video id="mycam"></video>
+    </body>
+    <script>
+        var makeRandom = (seed) => {
+            return Math.floor(Math.random(seed)*seed); 
+        }
+        
+        var myid = "camera"+makeRandom(10000);
+        var peer = new Peer(myid, {'key': 'dbe1b9ed-5a52-4488-a592-c451daf74206'});
+        var peerCustomMesg;
+        
+        peer.on("open", (id) => {
+            console.log(id);
+            peerCustomMesg = new PeerCustomMesg(peer, "CAMERA_MONITOR"); 
+            
+            peerCustomMesg.on("message", function(mesg){
+                console.log("receive custom message: ",mesg.srcPeerID, mesg.data )
+            })
+        })
+        
+    </script>
+</html>    
