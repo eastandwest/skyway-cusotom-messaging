@@ -6,18 +6,45 @@
         <script src="https://skyway.io/dist/0.3/peer.js"></script>
         <script src="../bower_components/eventemitter3/index.js"></script>   
         <script src="../lib/peer_custom_mesg.js"></script>   
+        <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
     </head>
     <body>
+        <h1>Camera</h1>
+        <p>
+        location : <span id="location"></span><br>
+        name : <span id="name"></span>
+        </p>
         <video id="mycam"></video>
     </body>
     <script>
         var makeRandom = (seed) => {
             return Math.floor(Math.random(seed)*seed); 
         }
+        var loc = (function(){
+            var locations = ["tokyo", "oosaka", "palo alto", "mountain view"];
+            var len = locations.length
+                , idx = Math.floor(Math.random() * len);
+            
+            return locations[idx]
+        }());
         
-        var myid = "camera"+makeRandom(10000);
+        var name = (function(){
+            var names = ["Office", "Home", "Park", "restaulant"];
+            var len = names.length
+                , idx = Math.floor(Math.random() * len);
+            
+            return names[idx]
+        }());
+        
+        ////////////////////////////////////////////////////////////
+        //
+        
+        var myid = "camera"+makeRandom(10000000000);
         var peer = new Peer(myid, {'key': 'dbe1b9ed-5a52-4488-a592-c451daf74206'});
         var peerCustomMesg;
+        
+        $("#location").text(loc);
+        $("#name").text(name);
         
         peer.on("open", (id) => {
             console.log(id);
@@ -25,8 +52,34 @@
             
             peerCustomMesg.on("message", function(mesg){
                 console.log("receive custom message: ",mesg.srcPeerID, mesg.data )
+                handleMesg(mesg);
             })
         })
+        
+        var handleMesg = (mesg) => {
+            var monitorID = mesg.srcPeerID
+                , req = mesg.data;
+            
+            if(req.method === "GET") {
+                switch(req.resource){
+                case '/profile':
+                    peerCustomMesg.send(monitorID, {
+                        "resource": "/profile",
+                        "response": {
+                            "name": name,
+                            "location": loc
+                        }
+                    });
+                    break;
+                case '/livestream':
+                    // todo start WebRTC live stream
+                    console.log("attempt to start live stream")
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
         
     </script>
 </html>    

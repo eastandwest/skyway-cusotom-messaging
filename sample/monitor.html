@@ -6,8 +6,11 @@
         <script src="https://skyway.io/dist/0.3/peer.js"></script>
         <script src="../bower_components/eventemitter3/index.js"></script>   
         <script src="../lib/peer_custom_mesg.js"></script>   
+        <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
     </head>
     <body>
+        <h1>Monitor</h1>
+        <p id="camera-list"></p>
         <video id="remotecam"></video>
     </body>
     <script>
@@ -16,15 +19,53 @@
         var peerCustomMesg;
         
         peer.on("open", (id) => {
-            console.log(id);
             myid = id;
             peerCustomMesg = new PeerCustomMesg(peer, "CAMERA_MONITOR"); 
             
             peerCustomMesg.on("message", function(data){
                 console.log("receive custom message: ", data)
+                handleMesg(data);
             })
             
+            showCamList();
         });
         
+        var showCamList = () => {
+            peer.listAllPeers((list) => {
+                list.forEach((camPeerID) => {
+                    if(camPeerID.indexOf("camera") === 0) reqCamProfile(camPeerID);
+                })
+            })
+        }
+        
+        var reqCamProfile = (camPeerID) => {
+            peerCustomMesg.send(camPeerID, {"method": "GET", "resource": "/profile"})
+        }
+        
+        var reqLiveStream = (camPeerID) => {
+            peerCustomMesg.send(camPeerID, {"method": "GET", "resource": "/livestream"});
+        }
+        
+        var handleMesg = (mesg) => {
+            switch(mesg.data.resource) {
+            case "/profile":
+                showCamProfile(mesg);
+                break;
+            default:
+                break;
+            }
+        }
+        
+        var showCamProfile = (mesg) => {
+            var $prof = $("<div>").text("name: " + mesg.data.response.name + ", location: " + mesg.data.response.location);
+            var $btn = $("<button>").text("watch")
+                    .attr("camera-id", mesg.srcPeerID)
+                    .on("click", function(ev){
+                        reqLiveStream($(this).attr("camera-id"));
+                    });
+            $prof.append($btn); 
+            $("#camera-list").append($prof);
+        }
+        
     </script>
-</html>    
+</html>   
