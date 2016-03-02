@@ -4,32 +4,45 @@
         <title>monitor</title>
         <meta charset='utf8'>
         <script src="https://skyway.io/dist/0.3/peer.js"></script>
-        <script src="../bower_components/eventemitter3/index.js"></script>   
-        <script src="../lib/peer_custom_mesg.js"></script>   
+        <script src="../bower_components/eventemitter3/index.js"></script>
+        <script src="../lib/peer_custom_mesg.js"></script>
         <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
     </head>
     <body>
         <h1>Monitor</h1>
         <p id="camera-list"></p>
-        <video id="remotecam"></video>
+        <p>
+        <h2>remote camera</h2>
+        <video id="remotecam" autoplay></video>
+        </p>
     </body>
     <script>
         var myid;
         var peer = new Peer({'key': 'dbe1b9ed-5a52-4488-a592-c451daf74206'});
-        var peerCustomMesg;
-        
+        var peerCustomMesg, call;
+
         peer.on("open", (id) => {
             myid = id;
-            peerCustomMesg = new PeerCustomMesg(peer, "CAMERA_MONITOR"); 
-            
+            peerCustomMesg = new PeerCustomMesg(peer, "CAMERA_MONITOR");
+
             peerCustomMesg.on("message", function(data){
                 console.log("receive custom message: ", data)
                 handleMesg(data);
             })
-            
+
             showCamList();
+
+            peer.on("call", (call) => {
+              call.answer();  // since this is monitor no stream answerd to camera
+
+              call.on('stream', (stream) => {
+                console.log('receive video stream from remote camera');
+                var url = URL.createObjectURL(stream);
+                $("#remotecam").prop("src", url);
+              });
+            });
         });
-        
+
         var showCamList = () => {
             peer.listAllPeers((list) => {
                 list.forEach((camPeerID) => {
@@ -37,15 +50,15 @@
                 })
             })
         }
-        
+
         var reqCamProfile = (camPeerID) => {
             peerCustomMesg.send(camPeerID, {"method": "GET", "resource": "/profile"})
         }
-        
+
         var reqLiveStream = (camPeerID) => {
             peerCustomMesg.send(camPeerID, {"method": "GET", "resource": "/livestream"});
         }
-        
+
         var handleMesg = (mesg) => {
             switch(mesg.data.resource) {
             case "/profile":
@@ -55,7 +68,7 @@
                 break;
             }
         }
-        
+
         var showCamProfile = (mesg) => {
             var $prof = $("<div>").text("name: " + mesg.data.response.name + ", location: " + mesg.data.response.location);
             var $btn = $("<button>").text("watch")
@@ -63,9 +76,12 @@
                     .on("click", function(ev){
                         reqLiveStream($(this).attr("camera-id"));
                     });
-            $prof.append($btn); 
+            $prof.append($btn);
             $("#camera-list").append($prof);
         }
-        
+
+
+
+
     </script>
-</html>   
+</html>
