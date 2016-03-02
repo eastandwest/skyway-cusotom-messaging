@@ -17,24 +17,33 @@
         </p>
     </body>
     <script>
-        var myid;
+        var myid, peerCustomMesg, call;
         var peer = new Peer({'key': 'dbe1b9ed-5a52-4488-a592-c451daf74206'});
-        var peerCustomMesg, call;
 
+        // when established connection to SkyWay signaling server
         peer.on("open", (id) => {
             myid = id;
+
+            // show camera list
+            showCamList();
+
+            // create custome message instance
+            // on top of it, obtaining camera profile and requesting live stream
+            // are transmitted.
             peerCustomMesg = new PeerCustomMesg(peer, "CAMERA_MONITOR");
 
+            // when custom message arrived from remote camera
             peerCustomMesg.on("message", function(data){
                 console.log("receive custom message: ", data)
                 handleMesg(data);
             })
 
-            showCamList();
-
+            // when incoming call arrive from remote camera, answer with null stream
+            // and setup onStream handler for it
             peer.on("call", (call) => {
               call.answer();  // since this is monitor no stream answerd to camera
 
+              // when video stream alive display video on top of the screen
               call.on('stream', (stream) => {
                 console.log('receive video stream from remote camera');
                 var url = URL.createObjectURL(stream);
@@ -43,6 +52,8 @@
             });
         });
 
+        // show camera list which are serving remote video streams.
+        // to obtain list of remote camera service, SkyWay's REST api is used.
         var showCamList = () => {
             peer.listAllPeers((list) => {
                 list.forEach((camPeerID) => {
@@ -51,14 +62,17 @@
             })
         }
 
+        // send requst to remote camera for obtaining machine's profile
         var reqCamProfile = (camPeerID) => {
             peerCustomMesg.send(camPeerID, {"method": "GET", "resource": "/profile"})
         }
 
+        // send requst to remote camera for obtaining video stream
         var reqLiveStream = (camPeerID) => {
             peerCustomMesg.send(camPeerID, {"method": "GET", "resource": "/livestream"});
         }
 
+        // Message handler for custom message from remote camera.
         var handleMesg = (mesg) => {
             switch(mesg.data.resource) {
             case "/profile":
@@ -69,6 +83,8 @@
             }
         }
 
+        // Display remote camera information when profile of camera is obtained
+        // via custom message.
         var showCamProfile = (mesg) => {
             var $prof = $("<div>").text("name: " + mesg.data.response.name + ", location: " + mesg.data.response.location);
             var $btn = $("<button>").text("watch")
@@ -79,9 +95,5 @@
             $prof.append($btn);
             $("#camera-list").append($prof);
         }
-
-
-
-
     </script>
 </html>

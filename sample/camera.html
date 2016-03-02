@@ -20,9 +20,15 @@
         </p>
     </body>
     <script>
+        //////////////////////////////////////////////////////////////
+        // utility and dummy functions for demonstrations
+
+        // make random number, it is used for making my peer id.
         var makeRandom = (seed) => {
             return Math.floor(Math.random(seed)*seed);
         }
+
+        // for demonstration, camera's profile of location name is randomly determined
         var loc = (function(){
             var locations = ["tokyo", "oosaka", "palo alto", "mountain view"];
             var len = locations.length
@@ -31,6 +37,7 @@
             return locations[idx]
         }());
 
+        // for demonstration, camera's profile of name is randomly determined
         var name = (function(){
             var names = ["Office", "Home", "Park", "restaulant"];
             var len = names.length
@@ -40,15 +47,18 @@
         }());
 
         ////////////////////////////////////////////////////////////
-        //
+        // codes for services
 
         var myid = "camera"+makeRandom(10000000000);
         var peer = new Peer(myid, {'key': 'dbe1b9ed-5a52-4488-a592-c451daf74206'});
         var peerCustomMesg, call;
 
+        // display this camera's profile
         $("#location").text(loc);
         $("#name").text(name);
 
+        // when established connection to SkyWay signaling server
+        // setup custom message
         peer.on("open", (id) => {
             console.log(id);
             peerCustomMesg = new PeerCustomMesg(peer, "CAMERA_MONITOR");
@@ -59,12 +69,14 @@
             })
         })
 
+        // message handler for custom message from monitor site
         var handleMesg = (mesg) => {
             var monitorID = mesg.srcPeerID
                 , req = mesg.data;
 
             if(req.method === "GET") {
                 switch(req.resource){
+                // when profile request, send profile info with name and location
                 case '/profile':
                     peerCustomMesg.send(monitorID, {
                         "resource": "/profile",
@@ -74,9 +86,20 @@
                         }
                     });
                     break;
+                // when livestream request, response ok message then star WebRTC
+                // video streaming service
                 case '/livestream':
                     // todo start WebRTC live stream
                     console.log("attempt to start live stream")
+
+                    peerCustomMesg.send(monitorID, {
+                        "resource": "/profile",
+                        "response": {
+                            "name": name,
+                            "location": loc
+                        }
+                    });
+
                     startVideo(monitorID);
                     break;
                 default:
@@ -85,6 +108,8 @@
             }
         }
 
+        // start obtaining live stream from camera, then start establishing WebRTC
+        // video streaming
         var startVideo = (monitorID) => {
           navigator.webkitGetUserMedia({"video": true, "audiio": false}, (stream) => {
             var url = URL.createObjectURL(stream);
@@ -94,8 +119,5 @@
             console.warn(err);
           });
         }
-
-
-
     </script>
 </html>
