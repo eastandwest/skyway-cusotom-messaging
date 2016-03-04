@@ -1,0 +1,33 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Unit test for peer_custom_mesg.js</title>
+    <script src="https://skyway.io/dist/0.3/peer.js"></script>
+    <script src="../bower_components/eventemitter3/index.js"></script>
+    <script src="../lib/peer_custom_mesg.js"></script>
+    <link rel="stylesheet" href="../../node_modules/mocha/mocha.css" />
+  </head>
+  <body>
+    <div id="mocha"></div>
+    <script src="../../node_modules/mocha/mocha.js"></script>
+    <script src="../../node_modules/chai/chai.js"></script>
+
+    <script>
+      mocha.setup('bdd')
+      mocha.reporter('html');
+
+      var shold = chai.should();
+      var expect = chai.expect;
+    </script>
+
+    <!-- Tests -->
+    <script src="unit/peer_custom_mesg.test.js"></script>
+
+    <script>
+      // Only tests run in real browser, injected script run if options.run == true
+      if (navigator.userAgent.indexOf('PhantomJS') < 0) {
+      mocha.run();
+      }
+    </script>
+  </body>
+</html>
