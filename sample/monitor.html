@@ -3,21 +3,35 @@
     <head>
         <title>monitor</title>
         <meta charset='utf8'>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css">
+
         <script src="https://skyway.io/dist/0.3/peer.js"></script>
         <script src="../bower_components/eventemitter3/index.js"></script>
         <script src="../lib/peer_custom_mesg.js"></script>
         <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
+        <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
     </head>
     <body>
-        <h1>Monitor</h1>
+      <div class="container">
+        <div class="page-headeer">
+          <h1>WebRTC Remote Cam Monitor</h1>
+          <p class="lead">WebRTC IoT demonstration: Lineup list of WebRTC remote cameras</p>
+        </div>
+        <h3>remote camera view</h3>
         <p id="camera-list"></p>
+        <!--
         <p>
-        <h2>remote camera</h2>
         <video id="remotecam" autoplay></video>
         </p>
+        -->
+      </div>
     </body>
     <script>
-        var myid, peerCustomMesg, call;
+        var myid, peerCustomMesg;
         var peer = new Peer({'key': 'dbe1b9ed-5a52-4488-a592-c451daf74206'});
 
         // when established connection to SkyWay signaling server
@@ -30,11 +44,10 @@
             // create custome message instance
             // on top of it, obtaining camera profile and requesting live stream
             // are transmitted.
-            peerCustomMesg = new PeerCustomMesg(peer, "CAMERA_MONITOR");
+            peerCustomMesg = new PeerCustomMesg(peer, "CAMERAMONITOR");
 
             // when custom message arrived from remote camera
             peerCustomMesg.on("message", function(data){
-                console.log("receive custom message: ", data)
                 handleMesg(data);
             })
 
@@ -45,9 +58,10 @@
 
               // when video stream alive display video on top of the screen
               call.on('stream', (stream) => {
-                console.log('receive video stream from remote camera');
+                console.log('receive video stream from remote camera', call);
                 var url = URL.createObjectURL(stream);
-                $("#remotecam").prop("src", url);
+                $("video[data-cam-peerid=" + call.peer + "]").prop("src", url);
+                $("button[data-cam-peerid=" + call.peer + "]").text("stop");
               });
             });
         });
@@ -86,14 +100,41 @@
         // Display remote camera information when profile of camera is obtained
         // via custom message.
         var showCamProfile = (mesg) => {
-            var $prof = $("<div>").text("name: " + mesg.data.response.name + ", location: " + mesg.data.response.location);
-            var $btn = $("<button>").text("watch")
-                    .attr("camera-id", mesg.srcPeerID)
-                    .on("click", function(ev){
-                        reqLiveStream($(this).attr("camera-id"));
-                    });
-            $prof.append($btn);
-            $("#camera-list").append($prof);
+          var $prof = $("#camera-list");
+          // append row-cam when required
+          if(($(".row-cam").length % 3 ) === 0) {
+            $prof.append('<div class="row row-cam"></div>');
+          }
+
+          // append box
+
+          var $last_row = $(".row-cam").slice(-1);
+
+          var template = [
+            '<div class="col-md-4 box-cam" data-cam-peerid="${camPeerID}">',
+              '<table class="table">',
+                '<tr><td><strong>name</strong></td><td>${name}</td></tr>',
+                '<tr><td><strong>location</strong></td><td>${location}</td></tr>',
+              '</table>',
+              '<p class="text-center"><button class="btn btn-default" data-cam-peerid="${camPeerID}">watch</button></p>',
+              '<p><video data-cam-peerid="${camPeerID}" width="100%" autoplay></video></p>',
+            '</div>'].join("");
+
+          var html = template
+            .replace(/\$\{camPeerID\}/g, mesg.srcPeerID)
+            .replace(/\$\{name\}/g, mesg.data.response.name)
+            .replace(/\$\{location\}/g, mesg.data.response.location)
+
+          $last_row.append(html);
+
+          $("button[data-cam-peerid=" + mesg.srcPeerID + "]").on("click", function(ev){
+            var camPeerID = $(this).data("cam-peerid");
+            if($(this).text() === "watch") {
+              reqLiveStream(camPeerID);
+            } else {
+              alert("todo: stop video stream " + camPeerID);
+            }
+          });
         }
     </script>
 </html>

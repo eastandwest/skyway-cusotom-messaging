@@ -3,21 +3,35 @@
     <head>
         <title>camera</title>
         <meta charset='utf8'>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css">
+
         <script src="https://skyway.io/dist/0.3/peer.js"></script>
         <script src="../bower_components/eventemitter3/index.js"></script>
         <script src="../lib/peer_custom_mesg.js"></script>
         <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
+        <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     </head>
     <body>
-        <h1>Camera</h1>
+      <div class="container">
+        <div class="page-header">
+          <h1>A Dashboard for WebRTC Cam</h1>
+          <p class="lead">Dashboard for local WebRTC cam</p>
+        </div>
+        <h3>meta info</h3>
         <p>
-        location : <span id="location"></span><br>
-        name : <span id="name"></span>
+        <table class="table">
+          <tr><td><strong>location</strong></td><td><span id="location"></span></td></tr>
+          <tr><td><strong>name</strong></td><td><span id="name"></span></td></tr>
+        </table>
         </p>
+        <h3>local video view</h3>
         <p>
-        <h2>local video stream</h2>
-        <video id="mycam" autoplay></video>
+        <video id="mycam" width="100%" autoplay></video>
         </p>
+      </div>
     </body>
     <script>
         //////////////////////////////////////////////////////////////
@@ -61,7 +75,7 @@
         // setup custom message
         peer.on("open", (id) => {
             console.log(id);
-            peerCustomMesg = new PeerCustomMesg(peer, "CAMERA_MONITOR");
+            peerCustomMesg = new PeerCustomMesg(peer, "CAMERAMONITOR");
 
             peerCustomMesg.on("message", function(mesg){
                 console.log("receive custom message: ",mesg.srcPeerID, mesg.data )
@@ -93,11 +107,8 @@
                     console.log("attempt to start live stream")
 
                     peerCustomMesg.send(monitorID, {
-                        "resource": "/profile",
-                        "response": {
-                            "name": name,
-                            "location": loc
-                        }
+                        "resource": "/livestream",
+                        "response": "ok"
                     });
 
                     startVideo(monitorID);
