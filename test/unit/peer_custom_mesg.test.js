@@ -46,6 +46,36 @@ describe('#constructor()', function(){
   });
 });
 
+describe('#_signalling_mesg()', function(){
+  var custom = new PeerCustomMesg(peer, "UNITTEST");
+
+  it('should return true if type is PING', () => {
+    expect(custom._is_signalling_mesg("PING")).to.be.true;
+  });
+
+  it('should return true if type is OFFER', () => {
+    expect(custom._is_signalling_mesg("OFFER")).to.be.true;
+  });
+
+  it('should return true if type is ANSWER', () => {
+    expect(custom._is_signalling_mesg("ANSWER")).to.be.true;
+  });
+
+  it('should return true if type is CANDIDATE', () => {
+    expect(custom._is_signalling_mesg("CANDIDATE")).to.be.true;
+  });
+
+  it('should return false if type is PONG, since it is not happen in the SkyWay specification.', () => {
+    expect(custom._is_signalling_mesg("PONG")).to.be.false;
+  });
+
+  it('should return false if type is not for signalling message', () => {
+    expect(custom._is_signalling_mesg("CUSTOM")).to.be.false;
+    expect(custom._is_signalling_mesg("PING_")).to.be.false;
+    expect(custom._is_signalling_mesg("_PING")).to.be.false;
+  });
+
+});
 describe('#_validate_send()', function(){
   var custom = new PeerCustomMesg(peer, "UNITTEST");
 
