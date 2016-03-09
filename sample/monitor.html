@@ -10,6 +10,7 @@
 
         <script src="https://skyway.io/dist/0.3/peer.js"></script>
         <script src="../bower_components/eventemitter3/index.js"></script>
+        <script src="../bower_components/js-md5/src/md5.js"></script>
         <script src="../lib/peer_custom_mesg.js"></script>
         <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
         <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -85,6 +86,12 @@
         var reqLiveStream = (camPeerID) => {
             peerCustomMesg.send(camPeerID, {"method": "GET", "resource": "/livestream"});
         }
+
+        // send requst to stop stream
+        var reqStopStream = (camPeerID) => {
+            peerCustomMesg.send(camPeerID, {"method": "GET", "resource": "/livestream"});
+        }
+
 
         // Message handler for custom message from remote camera.
         var handleMesg = (mesg) => {
