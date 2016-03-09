@@ -224,3 +224,33 @@ describe('#_validate_customtype()', function(){
     expect(custom._has_valid_customtype("X_FAILTEST")).to.be.false;
   });
 });
+
+describe("#_set_sender_callback()", function(){
+  var custom = new PeerCustomMesg(peer, "UNITTEST");
+
+  it("should be true if transaction_id is not exist and callback is function", function(){
+  });
+});
+
+describe("#_get_sender_callback()", function(){
+  var custom = new PeerCustomMesg(peer, "UNITTEST");
+
+  it("should be function if transaction_id is exist. Also, this callback must be deleted", function(){
+  });
+});
+
+describe("#_set_receiver_callback()", function(){
+  var custom = new PeerCustomMesg(peer, "UNITTEST");
+
+  it("should be true if transaction_id is not exist and callback is function", function(){
+  });
+});
+
+describe("#_get_receiver_callback()", function(){
+  var custom = new PeerCustomMesg(peer, "UNITTEST");
+
+  it("should be function if transaction_id is exist. Also, this callback must be deleted", function(){
+  });
+});
+
+
