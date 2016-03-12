@@ -28,8 +28,11 @@ $ open https://localhost:8080/monitor.html
 $ npm run test
 ```
 
+* browser test
+
 ```
 $ npm run devtest
+$ open http://localhost:8081/test.html
 ```
 
 ---
