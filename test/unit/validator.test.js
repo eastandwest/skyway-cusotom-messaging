@@ -15,11 +15,12 @@ describe('validator', () => {
   });
 
   describe('#is_falsy(val)', () => {
-    it('should return true if parameter is falthy', () => {
+    it('should return true if parameter is falthy (in this method number 0 is not counted as falsy', () => {
       expect(validator.is_falsy(false)).to.true;
       expect(validator.is_falsy(null)).to.true;
-      expect(validator.is_falsy(0)).to.true;
+      expect(validator.is_falsy(0)).to.false;
       expect(validator.is_falsy(undefined)).to.true;
+      expect(validator.is_falsy(NaN)).to.true;
     });
     it('should return false if parameter is not falthy', () => {
       expect(validator.is_falsy(1)).to.false;
