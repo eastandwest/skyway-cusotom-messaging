@@ -142,4 +142,43 @@ describe('PeerCustomMesg', () => {
       sinon.assert.calledWith(spy, {"srcPeerID": "456", "data": "hello"});
     });
   });
+
+  describe("#rpc(method, dst, resource, parameter)", () => {
+    var pcm = new PeerCustomMesg(stub, "CUSTOM");
+
+    // validate method
+    it("should throw error when method is not GET|POST|DELETE|PUT", () => {
+      expect( () => { pcm.rpc(null, "123", "/resouce")} ).to.throw();
+      expect( () => { pcm.rpc(123, "123", "/resouce")} ).to.throw();
+      expect( () => { pcm.rpc("HOGE", "123", "/resouce")} ).to.throw();
+    });
+
+    // validate dst
+    it("should throw error when dst is not string", () => {
+      expect(function(){pcm.rpc("GET", null, "/resouce")}).to.throw();
+      expect(function(){pcm.rpc("GET", 123, "/resouce")}).to.throw();
+    });
+
+    // validate resource
+    it("should throw error when resource is not string start with /", () => {
+      expect(function(){pcm.rpc("GET", "123", null)}).to.throw();
+      expect(function(){pcm.rpc("GET", "123", 123)}).to.throw();
+      expect(function(){pcm.rpc("GET", "123", "no-slash")}).to.throw();
+    });
+
+    // parameter is optional and any type is applied, so that no test code
+
+    // success pattern
+    it("should return Promise object when parameter is valid", () => {
+      expect(pcm.rpc("GET", "123", "/resource").then(() => {}, () => {})).to.instanceof(Promise);
+      expect(pcm.rpc("get", "123", "/resource")).to.instanceof(Promise);
+      expect(pcm.rpc("POST", "123", "/resource")).to.instanceof(Promise);
+      expect(pcm.rpc("post", "123", "/resource")).to.instanceof(Promise);
+      expect(pcm.rpc("DELETE", "123", "/resource")).to.instanceof(Promise);
+      expect(pcm.rpc("delete", "123", "/resource")).to.instanceof(Promise);
+      expect(pcm.rpc("PUT", "123", "/resource")).to.instanceof(Promise);
+      expect(pcm.rpc("PUT", "123", "/resource")).to.instanceof(Promise);
+    });
+  });
+
 });
