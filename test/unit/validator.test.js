@@ -127,10 +127,7 @@ describe('validator', () => {
   describe('#is_peerjs_format(obj)', () => {
     it('should return true if obj is proper peerjs format', () => {
       expect(validator.is_peerjs_format({
-        type: "OFFER", payload: {}, dst: "123"
-      })).to.true;
-      expect(validator.is_peerjs_format({
-        type: "OFFER", payload: "hello", dst: "123"
+        type: "OFFER", payload: "hello", dst: "123", src: "345",
       })).to.true;
       expect(validator.is_peerjs_format({
         type: "OFFER", payload: {}, dst: "123", src: "345",

@@ -26,6 +26,7 @@
     "chai": "^3.5.0",
     "mocha": "^2.4.5",
     "mocha-loader": "^0.7.1",
+    "sinon": "git+https://github.com/sinonjs/sinon.git",
     "tap": "^5.7.0",
     "webpack": "^1.12.14"
   },

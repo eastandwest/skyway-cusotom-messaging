@@ -2,7 +2,8 @@
 
 var expect = require('chai').expect
   , EventEmitter = require('events')
-  , PeerCustomMesg = require('../../lib/modules/PeerCustomMesg');
+  , PeerCustomMesg = require('../../lib/modules/PeerCustomMesg')
+  , sinon = require('sinon');
 
 class StubSocket extends EventEmitter {
   constructor() {
@@ -78,4 +79,67 @@ describe('PeerCustomMesg', () => {
       expect(function(){tmp.send("123", null)}).to.throw();
     });
   })
+
+
+  describe('#EventEmitter', () => {
+    var stub = new Stub();
+
+    it('should throw error when data is incorrect format', () => {
+      var pcm = new PeerCustomMesg(stub, "CUSTOM");
+      expect(function(){stub.socket.emit("message", {})}).to.throw();
+      expect(function(){stub.socket.emit("message", {"type": "X_CUSTOM"})}).to.throw();
+      expect(function(){stub.socket.emit("message", {"type": "X_CUSTOM", "payload": {}})}).to.throw();
+      expect(function(){stub.socket.emit("message", {"type": "X_CUSTOM", "payload": {}, "dst": "123"})}).to.throw();
+    });
+    it('should emit signalling-mesg when data.type is PING', () => {
+      var pcm = new PeerCustomMesg(stub, "CUSTOM");
+      var spy = sinon.spy();
+
+      pcm.on("signalling-mesg", spy);
+      stub.socket.emit("message", {"type": "PING"});
+      sinon.assert.calledOnce(spy);
+      sinon.assert.calledWith(spy, "PING");
+    });
+    it('should emit signalling-mesg when data.type is OFFER', () => {
+      var pcm = new PeerCustomMesg(stub, "CUSTOM");
+      var spy = sinon.spy();
+
+      pcm.on("signalling-mesg", spy);
+      stub.socket.emit("message", {"type": "OFFER"});
+      sinon.assert.calledOnce(spy);
+      sinon.assert.calledWith(spy, "OFFER");
+    });
+    it('should emit signalling-mesg when data.type is CANDIDATE', () => {
+      var pcm = new PeerCustomMesg(stub, "CUSTOM");
+      var spy = sinon.spy();
+
+      pcm.on("signalling-mesg", spy);
+      stub.socket.emit("message", {"type": "CANDIDATE"});
+      sinon.assert.calledOnce(spy);
+      sinon.assert.calledWith(spy, "CANDIDATE");
+    });
+
+    it('should throw error when data.type is PONG', () => {
+      var pcm = new PeerCustomMesg(stub, "CUSTOM");
+      expect(function(){ stub.socket.emit("message", {"type": "PONG"})}).throw();
+    });
+    it('should throw error when data.type does not equal to X_CUSTOM', () => {
+      var pcm = new PeerCustomMesg(stub, "CUSTOM");
+      expect(function(){ stub.socket.emit("message", {"type": "X_HOGE", "payload": {}, "dst": "123", "src": "456"})}).throw();
+    });
+    it('should throw error when src equal dst', () => {
+      var pcm = new PeerCustomMesg(stub, "CUSTOM");
+      expect(function(){ stub.socket.emit("message", {"type": "X_HOGE", "payload": {}, "dst": "123", "src": "123"})}).throw();
+    });
+    it('should emit callback when data is valid', () => {
+      var pcm = new PeerCustomMesg(stub, "CUSTOM");
+      var spy = sinon.spy();
+
+      pcm.on("message", spy);
+      stub.socket.emit("message", {"type": "X_CUSTOM", "payload": "hello", "dst": "123", "src": "456"});
+
+      sinon.assert.calledOnce(spy);
+      sinon.assert.calledWith(spy, {"srcPeerID": "456", "data": "hello"});
+    });
+  });
 });
