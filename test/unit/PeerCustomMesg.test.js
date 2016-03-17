@@ -339,4 +339,23 @@ describe('PeerCustomMesg', () => {
     });
   });
 
+  describe("#get", () => {
+    var stub = new Stub();
+    var pcm = new PeerCustomMesg(stub, "CUSTOM");
+
+    it("should call #rpc with GET", () => {
+      var spy = sinon.spy();
+
+      pcm.on("rpc-called", spy);
+      pcm.get("123", "/test", {}).then((result) => {}).catch((reason) => {});
+
+      sinon.assert.calledOnce(spy);
+      sinon.assert.calledWith(spy, {"method": "GET", "resource": "/test", "dst": "123"});
+    });
+  });
+
+
+
+
+
 });
