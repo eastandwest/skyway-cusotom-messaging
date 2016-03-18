@@ -24,6 +24,12 @@ class Stub {
 describe('PeerCustomMesg', () => {
   /* constructor */
   describe('#constructor', () => {
+    it("should success if peer is valid object and custom_type is blank", () => {
+      var stub = new Stub();
+      var tmp = new PeerCustomMesg(stub);
+      expect(tmp).to.be.an.instanceof(PeerCustomMesg);
+    });
+
     it("should success if peer is valid object and custom_type is string", () => {
       var stub = new Stub();
       var tmp = new PeerCustomMesg(stub, "CUSTOM");
