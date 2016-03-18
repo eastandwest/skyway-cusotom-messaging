@@ -11,7 +11,7 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 
         <script src="https://skyway.io/dist/0.3/peer.js"></script>
-        <script src="../peer_custom_mesg.build.js"></script>
+        <script src="/dist/peer_custom_mesg.js"></script>
     </head>
     <body>
       <div class="container">
@@ -31,6 +31,7 @@
     <script>
         var myid, peerCustomMesg;
         var peer = new Peer({'key': 'dbe1b9ed-5a52-4488-a592-c451daf74206'});
+        var pcm = null;
 
         // when established connection to SkyWay signaling server
         peer.on("open", (id) => {
@@ -42,12 +43,8 @@
             // create custome message instance
             // on top of it, obtaining camera profile and requesting live stream
             // are transmitted.
-            peerCustomMesg = new PeerCustomMesg(peer, "CAMERAMONITOR");
+            pcm = new PeerCustomMesg(peer);
 
-            // when custom message arrived from remote camera
-            peerCustomMesg.on("message", function(data){
-                handleMesg(data);
-            })
 
             // when incoming call arrive from remote camera, answer with null stream
             // and setup onStream handler for it
@@ -59,8 +56,13 @@
                 console.log('receive video stream from remote camera', call);
                 var url = URL.createObjectURL(stream);
                 $("video[data-cam-peerid=" + call.peer + "]").prop("src", url);
-                $("button[data-cam-peerid=" + call.peer + "]").text("stop");
+                $("button[data-cam-peerid=" + call.peer + "]").text("stop").prop("disabled", false);
               });
+              call.on('close', () => {
+                $("video[data-cam-peerid=" + call.peer + "]").prop("src", "");
+                $("button[data-cam-peerid=" + call.peer + "]").text("watch").prop("disabled", false);
+              });
+
             });
         });
 
@@ -69,6 +71,7 @@
         var showCamList = () => {
             peer.listAllPeers((list) => {
                 list.forEach((camPeerID) => {
+                  console.log(camPeerID);
                     if(camPeerID.indexOf("camera") === 0) reqCamProfile(camPeerID);
                 })
             })
@@ -76,34 +79,30 @@
 
         // send requst to remote camera for obtaining machine's profile
         var reqCamProfile = (camPeerID) => {
-            peerCustomMesg.send(camPeerID, {"method": "GET", "resource": "/profile"})
+          pcm.get(camPeerID, '/profile').then((data) => {
+            showCamProfile(camPeerID, data.response);
+          });
         }
 
         // send requst to remote camera for obtaining video stream
         var reqLiveStream = (camPeerID) => {
-            peerCustomMesg.send(camPeerID, {"method": "GET", "resource": "/livestream"});
+          pcm.get(camPeerID, "/livestream", "start").then((data) => {
+            console.log(camPeerID, data.response);
+          });;
         }
 
         // send requst to stop stream
         var reqStopStream = (camPeerID) => {
-            peerCustomMesg.send(camPeerID, {"method": "GET", "resource": "/livestream"});
+          pcm.get(camPeerID, "/livestream", "stop");
+          $("button[data-cam-peerid=" + camPeerID + "]")
+            .prop("disabled", true)
+            .text("now closing ...");
         }
 
-
-        // Message handler for custom message from remote camera.
-        var handleMesg = (mesg) => {
-            switch(mesg.data.resource) {
-            case "/profile":
-                showCamProfile(mesg);
-                break;
-            default:
-                break;
-            }
-        }
 
         // Display remote camera information when profile of camera is obtained
         // via custom message.
-        var showCamProfile = (mesg) => {
+        var showCamProfile = (camPeerID, profile) => {
           var $prof = $("#camera-list");
           // append row-cam when required
           if(($(".row-cam").length % 3 ) === 0) {
@@ -125,18 +124,18 @@
             '</div>'].join("");
 
           var html = template
-            .replace(/\$\{camPeerID\}/g, mesg.srcPeerID)
-            .replace(/\$\{name\}/g, mesg.data.response.name)
-            .replace(/\$\{location\}/g, mesg.data.response.location)
+            .replace(/\$\{camPeerID\}/g, camPeerID)
+            .replace(/\$\{name\}/g, profile.name)
+            .replace(/\$\{location\}/g, profile.location)
 
           $last_row.append(html);
 
-          $("button[data-cam-peerid=" + mesg.srcPeerID + "]").on("click", function(ev){
+          $("button[data-cam-peerid=" + camPeerID + "]").on("click", function(ev){
             var camPeerID = $(this).data("cam-peerid");
             if($(this).text() === "watch") {
               reqLiveStream(camPeerID);
             } else {
-              alert("todo: stop video stream " + camPeerID);
+              reqStopStream(camPeerID);
             }
           });
         }

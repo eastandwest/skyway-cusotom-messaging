@@ -21,9 +21,6 @@ describe("Response", () => {
       expect( () => {new Response({"transaction_id": "12345678901234567890123456789012", "method": "GET", "dst": "123", "resource" : "hoge", "parameter" : {}}) } ).to.throw()
       expect( () => {new Response({"transaction_id": "12345678901234567890123456789012", "method": "GET", "dst": "123", "resource" : "/hoge__", "parameter" : {}}) } ).to.throw()
     });
-    it("should throw error when param.parameter is not valid", () => {
-      expect( () => {new Response({"transaction_id": "12345678901234567890123456789012", "method": "GET", "dst": "123", "resource" : "/test" } ) } ).to.throw()
-    });
     it("should throw error when param.dst is not valid", () => {
       expect( () => {new Response({"transaction_id": "12345678901234567890123456789012", "method": "GET", "dst": null, "resource" : "/test", "parameter" : {}}) } ).to.throw()
       expect( () => {new Response({"transaction_id": "12345678901234567890123456789012", "method": "GET", "dst": 123, "resource" : "/test", "parameter" : {}}) } ).to.throw()
