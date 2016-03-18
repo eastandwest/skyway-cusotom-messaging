@@ -17,7 +17,7 @@ switch(process.env.NODE_ENV) {
       publicPath: "dist",
       filename: "[name].min.js"
     };
-    _port = 443;
+    _port = 8080;
     break;
   case "devtest":
     _entry = {
@@ -41,7 +41,7 @@ switch(process.env.NODE_ENV) {
       publicPath: "dist",
       filename: "[name].js"
     };
-    _port = 443;
+    _port = 8080;
     break;
 }
 
