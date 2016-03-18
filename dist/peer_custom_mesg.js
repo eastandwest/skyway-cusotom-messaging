@@ -115,9 +115,7 @@
 	      // suppress error when type is for signaling message
 	      if (!_validator2.default.is_peerjs_format(data)) throw "data type is not valid peerjs format";
 	
-	      // if request
-	      var req = data.payload;
-	      if (data.payload.name && data.payload.name === "request" && data.payload.method && data.payload.resource && data.payload.parameter && data.payload.transaction_id) {
+	      if (data.payload.name && data.payload.name === "request" && data.payload.method && data.payload.resource && data.payload.transaction_id) {
 	        // operate it as request
 	        var req = data.payload;
 	
@@ -164,6 +162,7 @@
 	          "status": res.status,
 	          "method": res.method,
 	          "resource": res.resource,
+	          "parameter": res.parameter,
 	          "response": res.response
 	        };
 	
@@ -688,7 +687,7 @@
 	      "method": param.method,
 	      "resource": param.resource,
 	      "parameter": param.parameter,
-	      "transaction_id": param.transaction_id
+	      "transaction_id": _this.transaction_id
 	    };
 	    return _this;
 	  }
@@ -1152,7 +1151,6 @@
 	
 	      if (!(!!param.dst && typeof param.dst === "string")) return false;
 	      if (!(!!param.resource && typeof param.resource === "string" && param.resource.match(/^\/[0-9a-zA-Z-]+$/))) return false;
-	      if (!param.parameter) return false;
 	
 	      return true;
 	    }
