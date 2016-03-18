@@ -96,5 +96,15 @@ $ npm run devtest
 $ open http://localhost:8081/test.html
 ```
 
+# sample site
+
+* camera.html
+
+https://eastandwest.github.io/skyway-cusotom-messaging/sample/camera.html
+
+* monitor.html
+
+https://eastandwest.github.io/skyway-cusotom-messaging/sample/monitor.html
+
 ---
 &copy; kensaku komatsu
