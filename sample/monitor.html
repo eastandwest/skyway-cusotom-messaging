@@ -11,7 +11,6 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 
         <script src="https://skyway.io/dist/0.3/peer.js"></script>
-        <script src="../dist/peer_custom_mesg.js"></script>
     </head>
     <body>
       <div class="container">
@@ -19,8 +18,9 @@
           <h1>WebRTC Remote Cam Monitor</h1>
           <p class="lead">WebRTC IoT demonstration: Lineup list of WebRTC remote cameras</p>
         </div>
-        <h3>remote camera view</h3>
-        <p id="camera-list"></p>
+        <div class="main">
+          <div id="camera-list"></div>
+        </div>
         <!--
         <p>
         <video id="remotecam" autoplay></video>
@@ -28,116 +28,5 @@
         -->
       </div>
     </body>
-    <script>
-        var myid, peerCustomMesg;
-        var peer = new Peer({'key': 'dbe1b9ed-5a52-4488-a592-c451daf74206'});
-        var pcm = null;
-
-        // when established connection to SkyWay signaling server
-        peer.on("open", (id) => {
-            myid = id;
-
-            // show camera list
-            showCamList();
-
-            // create custome message instance
-            // on top of it, obtaining camera profile and requesting live stream
-            // are transmitted.
-            pcm = new PeerCustomMesg(peer);
-
-
-            // when incoming call arrive from remote camera, answer with null stream
-            // and setup onStream handler for it
-            peer.on("call", (call) => {
-              call.answer();  // since this is monitor no stream answerd to camera
-
-              // when video stream alive display video on top of the screen
-              call.on('stream', (stream) => {
-                console.log('receive video stream from remote camera', call);
-                var url = URL.createObjectURL(stream);
-                $("video[data-cam-peerid=" + call.peer + "]").prop("src", url);
-                $("button[data-cam-peerid=" + call.peer + "]").text("stop").prop("disabled", false);
-              });
-              call.on('close', () => {
-                $("video[data-cam-peerid=" + call.peer + "]").prop("src", "");
-                $("button[data-cam-peerid=" + call.peer + "]").text("watch").prop("disabled", false);
-              });
-
-            });
-        });
-
-        // show camera list which are serving remote video streams.
-        // to obtain list of remote camera service, SkyWay's REST api is used.
-        var showCamList = () => {
-            peer.listAllPeers((list) => {
-                list.forEach((camPeerID) => {
-                  console.log(camPeerID);
-                    if(camPeerID.indexOf("camera") === 0) reqCamProfile(camPeerID);
-                })
-            })
-        }
-
-        // send requst to remote camera for obtaining machine's profile
-        var reqCamProfile = (camPeerID) => {
-          pcm.get(camPeerID, '/profile').then((data) => {
-            showCamProfile(camPeerID, data.response);
-          });
-        }
-
-        // send requst to remote camera for obtaining video stream
-        var reqLiveStream = (camPeerID) => {
-          pcm.get(camPeerID, "/livestream", "start").then((data) => {
-            console.log(camPeerID, data.response);
-          });;
-        }
-
-        // send requst to stop stream
-        var reqStopStream = (camPeerID) => {
-          pcm.get(camPeerID, "/livestream", "stop");
-          $("button[data-cam-peerid=" + camPeerID + "]")
-            .prop("disabled", true)
-            .text("now closing ...");
-        }
-
-
-        // Display remote camera information when profile of camera is obtained
-        // via custom message.
-        var showCamProfile = (camPeerID, profile) => {
-          var $prof = $("#camera-list");
-          // append row-cam when required
-          if(($(".row-cam").length % 3 ) === 0) {
-            $prof.append('<div class="row row-cam"></div>');
-          }
-
-          // append box
-
-          var $last_row = $(".row-cam").slice(-1);
-
-          var template = [
-            '<div class="col-md-4 box-cam" data-cam-peerid="${camPeerID}">',
-              '<table class="table">',
-                '<tr><td><strong>name</strong></td><td>${name}</td></tr>',
-                '<tr><td><strong>location</strong></td><td>${location}</td></tr>',
-              '</table>',
-              '<p class="text-center"><button class="btn btn-default" data-cam-peerid="${camPeerID}">watch</button></p>',
-              '<p><video data-cam-peerid="${camPeerID}" width="100%" autoplay></video></p>',
-            '</div>'].join("");
-
-          var html = template
-            .replace(/\$\{camPeerID\}/g, camPeerID)
-            .replace(/\$\{name\}/g, profile.name)
-            .replace(/\$\{location\}/g, profile.location)
-
-          $last_row.append(html);
-
-          $("button[data-cam-peerid=" + camPeerID + "]").on("click", function(ev){
-            var camPeerID = $(this).data("cam-peerid");
-            if($(this).text() === "watch") {
-              reqLiveStream(camPeerID);
-            } else {
-              reqStopStream(camPeerID);
-            }
-          });
-        }
-    </script>
+    <script src="dist/sample-monitor.build.js"></script>
 </html>

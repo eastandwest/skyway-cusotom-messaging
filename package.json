@@ -6,7 +6,8 @@
   "scripts": {
     "test": "find ./test -name '*.test.js' | xargs mocha -r babel-core/register",
     "devtest": "NODE_ENV=devtest webpack-dev-server --config webpack.config.js --inline --content-base ./test",
-    "dev": "NODE_ENV=development webpack-dev-server --config webpack.config.js --https --inline --content-base ./sample"
+    "dev": "NODE_ENV=development webpack-dev-server --config webpack.config.js --https --inline --content-base ./sample",
+    "sample": "NODE_ENV=sample webpack-dev-server --config webpack.config.js --https --inline --content-base ./sample"
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,7 @@
     "chai": "^3.5.0",
     "mocha": "^2.4.5",
     "mocha-loader": "^0.7.1",
+    "raw-loader": "^0.5.1",
     "sinon": "git+https://github.com/sinonjs/sinon.git",
     "tap": "^5.7.0",
     "webpack": "^1.12.14"
@@ -34,6 +36,8 @@
     "bootstrap": "^3.3.6",
     "events": "^1.1.0",
     "jquery": "^2.2.1",
-    "md5": "^2.1.0"
+    "md5": "^2.1.0",
+    "react": "^0.14.7",
+    "react-dom": "^0.14.7"
   }
 }

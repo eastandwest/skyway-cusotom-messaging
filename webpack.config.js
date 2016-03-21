@@ -11,7 +11,7 @@ switch(process.env.NODE_ENV) {
     _entry = {
            "peer_custom_mesg" : "./lib/main.js",
     };
-    _devtool = 'source-map',
+    _devtool = 'source-map';
     _output = {
       path: path.join(__dirname, "dist"),
       publicPath: "dist",
@@ -30,12 +30,25 @@ switch(process.env.NODE_ENV) {
     };
     _port = 8081;
     break;
+  case "sample":
+    _entry = {
+           "sample-monitor" : "./sample/components/monitor-entry.js",
+           "sample-camera" : "./sample/components/camera-entry.js"
+    };
+    _devtool = 'source-map';
+    _output = {
+      path: path.join(__dirname, "sample/dist"),
+      publicPath: "dist",
+      filename: "[name].build.js"
+    };
+    _port = 8080;
+    break;
   case "development":
   default:
     _entry = {
            "peer_custom_mesg" : "./lib/main.js",
     };
-    _devtool = 'source-map',
+    _devtool = 'source-map';
     _output = {
       path: path.join(__dirname, "dist"),
       publicPath: "dist",
@@ -58,6 +71,10 @@ module.exports = {
               query: {
                 presets: ['react', 'es2015']
               }
+            },
+            {
+              test: /\.html$/,
+              loader: 'raw-loader'
             }
             ]
           },
