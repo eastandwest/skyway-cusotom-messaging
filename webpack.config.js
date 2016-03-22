@@ -38,7 +38,7 @@ switch(process.env.NODE_ENV) {
     _devtool = 'source-map';
     _output = {
       path: path.join(__dirname, "sample/dist"),
-      publicPath: "dist",
+      publicPath: "sample/dist",
       filename: "[name].build.js"
     };
     _port = 8080;

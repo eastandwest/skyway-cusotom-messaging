@@ -7,7 +7,7 @@
     "test": "find ./test -name '*.test.js' | xargs mocha -r babel-core/register",
     "devtest": "NODE_ENV=devtest webpack-dev-server --config webpack.config.js --inline --content-base ./test",
     "dev": "NODE_ENV=development webpack-dev-server --config webpack.config.js --https --inline --content-base ./sample",
-    "sample": "NODE_ENV=sample webpack-dev-server --config webpack.config.js --https --inline --content-base ./sample"
+    "sample": "NODE_ENV=sample webpack-dev-server --config webpack.config.js --https --inline --content-base ./"
   },
   "repository": {
     "type": "git",
