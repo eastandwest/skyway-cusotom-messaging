@@ -9,19 +9,21 @@ var MonitorCameraComponent = React.createClass({
   },
   componentDidMount() {
     this.props.peer.on("call", (call) => {
-      call.answer();
+      if(call.peer === this.props.cameraId) {
+        call.answer();
 
-      call.on('stream', (stream) => {
-        this.setState({"streaming_url": URL.createObjectURL(stream)});
-        this.state.btnNode.disabled = "";
-        this.state.btnNode.textContent = "stop";
-      });
+        call.on('stream', (stream) => {
+          this.setState({"streaming_url": URL.createObjectURL(stream)});
+          this.state.btnNode.disabled = "";
+          this.state.btnNode.textContent = "stop";
+        });
 
-      call.on('close', () => {
-        this.setState({"streaming_url": ""});
-        this.state.btnNode.disabled = "";
-        this.state.btnNode.textContent = "watch";
-      });
+        call.on('close', () => {
+          this.setState({"streaming_url": ""});
+          this.state.btnNode.disabled = "";
+          this.state.btnNode.textContent = "watch";
+        });
+      }
     });
   },
 

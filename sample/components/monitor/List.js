@@ -44,41 +44,50 @@ var MonitorListComponent = React.createClass({
   monitorNodes() {
  },
   render() {
-
-    var testNode = () => {
-      if(true) {
-        return (<span>hogehoge</span>);
-      } else {
-        return (<div>hello, world</div>);
+    // make Grid IDs from this.state.camera_ids
+    var createGridIds = () => {
+      var arr = [], subarr = [], cursor = 0;
+      for(var key in this.state.camera_ids) {
+        cursor++;
+        if( (key % 3) === 0 ) subarr.length = 0;
+        subarr.push(this.state.camera_ids[key]);
+        if( (key % 3) === 2 || this.state.camera_ids.length === cursor ) arr.push(JSON.parse(JSON.stringify(subarr)));
       }
+      return arr;
     }
 
-    var monitorNodes = this.state.camera_ids.map((camera_id, key) => {
+    //
+    var gridNodes = (() => {
+      var gridIds = createGridIds()
+        , pcm = this.state.pcm
+      console.log(gridIds);
 
-      var key_ = parseInt(key);
-      var begin_row = (key_ % 3) === 0;
-      var end_row = (key_ % 3) === 2 || this.state.camera_ids.length === key_ + 1;
-      // TODO:
-      // <div className="row row-cam"></div>
-      return (
-        <div key={key} begin_row={begin_row} className="col-md-4 box-cam">
-          <MonitorProfileComponent cameraId={camera_id} pcm={this.state.pcm} />
-          <MonitorCameraComponent cameraId={camera_id} pcm={this.state.pcm} peer={this.state.peer} />
-        </div>
-      )
-    });
+      return gridIds.map((subarr, key) => {
+        var monitorNodes = subarr.map((camera_id, key) => {
+          return (
+            <div key={key} className="col-md-4 box-cam">
+                <MonitorProfileComponent cameraId={camera_id} pcm={this.state.pcm} />
+                <MonitorCameraComponent cameraId={camera_id} pcm={this.state.pcm} peer={this.state.peer} />
+            </div>
+          )
+        });
+
+        return(
+          <div key={key} className="row row-cam">
+          {monitorNodes}
+          </div>
+        )
+      });
+    })();
 
     return (
       <div className="monitorList">
         <h3>MonitorList</h3>
-        <div className="row row-cam">
-          {monitorNodes}
-        </div>
+        {gridNodes}
       </div>
     )
   }
 });
-
 
 var MonitorList = React.createFactory(MonitorListComponent);
 
