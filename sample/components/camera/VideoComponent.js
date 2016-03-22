@@ -1,8 +1,9 @@
 var React = require('react');
 
 require('../css/default.css');
+require('webrtc-adapter');
 
-navigator._getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+// navigator._getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
 var CameraVideoComponent = React.createClass({
   getInitialState(){
@@ -46,7 +47,7 @@ var CameraVideoComponent = React.createClass({
     }
   },
   startVideo(monitorID, callback) {
-      navigator.webkitGetUserMedia({"video": true, "audio": false}, (stream) => {
+      navigator.getUserMedia({"video": true, "audio": false}, (stream) => {
         this.setState({
           "media_stream": stream,
           "url": URL.createObjectURL(stream)
