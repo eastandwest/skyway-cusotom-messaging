@@ -9,7 +9,7 @@ var webpack = require('webpack')
 switch(process.env.NODE_ENV) {
   case "production":
     _entry = {
-           "peer_custom_mesg" : "./lib/main.js",
+           "peer_custom_mesg" : "./lib/index.js",
     };
     _devtool = 'source-map';
     _output = {

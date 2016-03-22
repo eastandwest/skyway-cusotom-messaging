@@ -1,7 +1,7 @@
 var React = require('react')
-  , VideoViewComponent = require('./Video')
-  , ProfileViewComponent = require('./Profile')
-  , PeerCustomMesg = require('../../../lib/modules/PeerCustomMesg')
+  , PeerCustomMesg = require('../../../lib/index')
+  , CameraVideoComponent = require('./VideoComponent')
+  , CameraProfileComponent = require('./ProfileComponent')
 
 var CameraViewComponent = React.createClass({
   getInitialState() {
@@ -30,8 +30,8 @@ var CameraViewComponent = React.createClass({
       if(this.state.peer && this.state.pcm) {
         return(
           <div>
-            <ProfileViewComponent pcm={this.state.pcm} />
-            <VideoViewComponent peer={this.state.peer} pcm={this.state.pcm} />
+            <CameraProfileComponent pcm={this.state.pcm} />
+            <CameraVideoComponent peer={this.state.peer} pcm={this.state.pcm} />
           </div>
         );
       } else { return (
@@ -39,7 +39,7 @@ var CameraViewComponent = React.createClass({
       ); };
     })();
     return (
-      <div className="CameraView">
+      <div className="cameraViewComponent">
         {showCameraView}
      </div>
     )

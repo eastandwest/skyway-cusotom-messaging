@@ -3,7 +3,7 @@ var React = require('react');
 
 navigator._getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
-var VideoViewComponent = React.createClass({
+var CameraVideoComponent = React.createClass({
   getInitialState(){
     return {
       "num_monitors" : 0,
@@ -73,13 +73,12 @@ var VideoViewComponent = React.createClass({
     for(var monitorid in this.state.callObjs) if(this.state.callObjs.hasOwnProperty(monitorid)) {
       count++;
     }
-    console.log(count);
     this.setState({"num_monitors": count});
   },
 
   render() {
     return (
-      <div className="VideoViewComponent">
+      <div className="cameraVideoComponent">
         <div># of connecting monitors : {this.state.num_monitors}</div>
         <video width="100%" src={this.state.url} autoPlay />
       </div>
@@ -88,6 +87,6 @@ var VideoViewComponent = React.createClass({
 });
 
 
-module.exports = VideoViewComponent;
+module.exports = CameraVideoComponent;
 
 

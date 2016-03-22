@@ -2,7 +2,7 @@
 
 var expect = require('chai').expect
   , EventEmitter = require('events')
-  , PeerCustomMesg = require('../../lib/modules/PeerCustomMesg')
+  , PeerCustomMesg = require('../../lib/index')
   , sinon = require('sinon')
 
 class StubSocket extends EventEmitter {

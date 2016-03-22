@@ -1,8 +1,8 @@
 {
   "name": "skyway-cusotom-messaging",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Enable custom message communication via SkyWay signaling server",
+  "main": "./lib/index.js",
   "scripts": {
     "test": "find ./test -name '*.test.js' | xargs mocha -r babel-core/register",
     "devtest": "NODE_ENV=devtest webpack-dev-server --config webpack.config.js --inline --content-base ./test",

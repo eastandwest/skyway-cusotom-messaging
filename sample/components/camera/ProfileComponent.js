@@ -1,6 +1,6 @@
 var React = require('react');
 
-var ProfileViewComponent = React.createClass({
+var CameraProfileComponent = React.createClass({
   getInitialState(){
     return {
       name: null,
@@ -39,7 +39,7 @@ var ProfileViewComponent = React.createClass({
   },
   render() {
     return (
-      <div className="ProfileViewComponent">
+      <div className="cameraProfileComponent">
          <table className="table">
           <tbody>
             <tr><td><strong>location</strong></td><td>{this.state.location}</td></tr>
@@ -52,6 +52,6 @@ var ProfileViewComponent = React.createClass({
 });
 
 
-module.exports = ProfileViewComponent;
+module.exports = CameraProfileComponent;
 
 

@@ -16,7 +16,7 @@ var MonitorProfileComponent = React.createClass({
 
   render() {
     return (
-      <div className="monitorProfile">
+      <div className="monitorProfileComponent">
         <table className="table">
           <tbody>
             <tr><td><strong>name</strong></td><td>{this.state.name}</td></tr>

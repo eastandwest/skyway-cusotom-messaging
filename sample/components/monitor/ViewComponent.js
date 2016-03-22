@@ -1,10 +1,10 @@
 var React = require('react')
-  , MonitorProfileComponent = require('./Profile')
-  , MonitorCameraComponent = require('./Camera')
-  , PeerCustomMesg = require('../../../lib/modules/PeerCustomMesg')
+  , PeerCustomMesg = require('../../../lib/index')
+  , MonitorProfileComponent = require('./ProfileComponent')
+  , MonitorVideoComponent = require('./VideoComponent')
 
 
-var MonitorListComponent = React.createClass({
+var MonitorViewComponent = React.createClass({
   getInitialState() {
     return {
       peer: null
@@ -67,7 +67,7 @@ var MonitorListComponent = React.createClass({
           return (
             <div key={key} className="col-md-4 box-cam">
                 <MonitorProfileComponent cameraId={camera_id} pcm={this.state.pcm} />
-                <MonitorCameraComponent cameraId={camera_id} pcm={this.state.pcm} peer={this.state.peer} />
+                <MonitorVideoComponent cameraId={camera_id} pcm={this.state.pcm} peer={this.state.peer} />
             </div>
           )
         });
@@ -81,7 +81,7 @@ var MonitorListComponent = React.createClass({
     })();
 
     return (
-      <div className="monitorList">
+      <div className="monitorViewComponent">
         <h3>MonitorList</h3>
         {gridNodes}
       </div>
@@ -89,6 +89,6 @@ var MonitorListComponent = React.createClass({
   }
 });
 
-var MonitorList = React.createFactory(MonitorListComponent);
+var MonitorView = React.createFactory(MonitorViewComponent);
 
-module.exports = MonitorList;
+module.exports = MonitorView;

@@ -1,6 +1,6 @@
 var React = require('react')
 
-var MonitorCameraComponent = React.createClass({
+var MonitorVideoComponent = React.createClass({
   getInitialState() {
     return {
       streaming_url: "",
@@ -43,7 +43,7 @@ var MonitorCameraComponent = React.createClass({
   },
   render() {
     return (
-      <div className="monitorCamera">
+      <div className="monitorVideoComponent">
         <p className="text-center">
           <button className="btn btn-default" onClick={this.onBtnClick}>watch</button>
         </p>
@@ -55,4 +55,4 @@ var MonitorCameraComponent = React.createClass({
   }
 });
 
-module.exports = MonitorCameraComponent;
+module.exports = MonitorVideoComponent;

@@ -1,4 +1,6 @@
-require("../monitor.html"); // this includes html file in watcher list.
+if(process.env.NODE_ENV==="sample") {
+  require("../monitor.html"); // this includes html file in watcher list.
+}
 
 var React = require('react')
   , ReactDOM = require('react-dom')
