@@ -1,5 +1,6 @@
 var React = require('react');
 
+require('../css/default.css');
 
 navigator._getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
@@ -60,6 +61,13 @@ var CameraVideoComponent = React.createClass({
     var call = this.props.peer.call(monitorID, this.state.media_stream);
     this.state.callObjs[monitorID] = call;
     this.countNumMonitors();
+
+    // when the close for peer's media channel is detected
+    // assuming that peer is closed because of browser close etc.
+    // however, it does not work for firefox ...
+    call.on('close', () => {
+      this.stopCall(monitorID);
+    });
   },
   stopCall(monitorID) {
     if(this.state.callObjs[monitorID]) {
@@ -80,7 +88,9 @@ var CameraVideoComponent = React.createClass({
     return (
       <div className="cameraVideoComponent">
         <div># of connecting monitors : {this.state.num_monitors}</div>
-        <video width="100%" src={this.state.url} autoPlay />
+        <div class="embed-responsive embed-responsive-4by3">
+          <video className="video-component embed-responsive-item" width="100%" src={this.state.url} autoPlay />
+        </div>
       </div>
     );
   }

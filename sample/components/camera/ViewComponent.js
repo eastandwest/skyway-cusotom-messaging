@@ -3,6 +3,11 @@ var React = require('react')
   , CameraVideoComponent = require('./VideoComponent')
   , CameraProfileComponent = require('./ProfileComponent')
 
+require('../css/default.css')
+
+
+///////////////////////////////////////////////////////
+// create react class
 var CameraViewComponent = React.createClass({
   getInitialState() {
     return {
@@ -30,8 +35,15 @@ var CameraViewComponent = React.createClass({
       if(this.state.peer && this.state.pcm) {
         return(
           <div>
-            <CameraProfileComponent pcm={this.state.pcm} />
-            <CameraVideoComponent peer={this.state.peer} pcm={this.state.pcm} />
+            <div className="panel panel-primary">
+              <div className="panel-heading">
+                <h3 className="panel-title">Local Camera View</h3>
+              </div>
+              <div className="panel-body">
+              <CameraProfileComponent pcm={this.state.pcm} />
+              <CameraVideoComponent peer={this.state.peer} pcm={this.state.pcm} />
+              </div>
+            </div>
           </div>
         );
       } else { return (

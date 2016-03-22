@@ -19,7 +19,7 @@ switch(process.env.NODE_ENV) {
     };
     _port = 8080;
     break;
-  case "devtest":
+ case "devtest":
     _entry = {
            "unittest" : "./test/unittest_entry.js"
     };
@@ -45,8 +45,8 @@ switch(process.env.NODE_ENV) {
     break;
   case "development":
   default:
-    _entry = {
-           "peer_custom_mesg" : "./lib/main.js",
+     _entry = {
+           "peer_custom_mesg" : "./lib/index.js",
     };
     _devtool = 'source-map';
     _output = {
@@ -64,18 +64,21 @@ module.exports = {
   output: _output,
   module: {
             loaders: [
-            {
-              test: /\.(js|jsx)?$/,
-              exclude: /(node_modules)/,
-              loader: 'babel', // 'babel-loader' is also a legal name to reference
-              query: {
-                presets: ['react', 'es2015']
-              }
-            },
-            {
-              test: /\.html$/,
-              loader: 'raw-loader'
-            }
+              {
+                test: /\.(js|jsx)?$/,
+                exclude: /(node_modules)/,
+                loader: 'babel', // 'babel-loader' is also a legal name to reference
+                query: {
+                  presets: ['react', 'es2015']
+                }
+              },
+              { test: /\.html$/, loader: 'raw-loader' },
+              { test: /\.css$/, loader: 'style-loader!css-loader' },
+              { test: /\.svg$/, loader: 'url-loader?mimetype=image/svg+xml' },
+              { test: /\.woff$/, loader: 'url-loader?mimetype=application/font-woff' },
+              { test: /\.woff2$/, loader: 'url-loader?mimetype=application/font-woff' },
+              { test: /\.eot$/, loader: 'url-loader?mimetype=application/font-woff' },
+              { test: /\.ttf$/, loader: 'url-loader?mimetype=application/font-woff' }
             ]
           },
  devServer:{

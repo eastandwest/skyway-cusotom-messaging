@@ -61,16 +61,16 @@ peer.on('open', (id) => {
 * Event: 'message'
   - data
 
-## how to build
+## how to build development version
 
 ```
 $ webpack
 ```
 
-* minified ( todo: different configuration should be created )
+* minified
 
 ```
-$ webpack -p
+$ NODE_ENV=production webpack -p
 ```
 
 # how to develop
@@ -83,13 +83,13 @@ $ open https://localhost:8080/monitor.html
 
 # how to run unit test
 
-* command-line only
+* command-line test with mocha
 
 ```
 $ npm run test
 ```
 
-* browser test
+* browser test with mocha
 
 ```
 $ npm run devtest

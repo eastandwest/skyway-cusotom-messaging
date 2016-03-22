@@ -3,7 +3,10 @@ var React = require('react')
   , MonitorProfileComponent = require('./ProfileComponent')
   , MonitorVideoComponent = require('./VideoComponent')
 
+require('../css/default.css');
 
+///////////////////////////////////////////////////////
+// react class definition
 var MonitorViewComponent = React.createClass({
   getInitialState() {
     return {
@@ -60,14 +63,20 @@ var MonitorViewComponent = React.createClass({
     var gridNodes = (() => {
       var gridIds = createGridIds()
         , pcm = this.state.pcm
-      console.log(gridIds);
 
       return gridIds.map((subarr, key) => {
         var monitorNodes = subarr.map((camera_id, key) => {
           return (
             <div key={key} className="col-md-4 box-cam">
-                <MonitorProfileComponent cameraId={camera_id} pcm={this.state.pcm} />
-                <MonitorVideoComponent cameraId={camera_id} pcm={this.state.pcm} peer={this.state.peer} />
+              <div className="panel panel-primary">
+                <div className="panel-heading">
+                  <h3 className="panel-title">Remote Camera View</h3>
+                </div>
+                <div className="panel-body">
+                  <MonitorProfileComponent cameraId={camera_id} pcm={this.state.pcm} />
+                  <MonitorVideoComponent cameraId={camera_id} pcm={this.state.pcm} peer={this.state.peer} />
+                </div>
+              </div>
             </div>
           )
         });
@@ -82,7 +91,7 @@ var MonitorViewComponent = React.createClass({
 
     return (
       <div className="monitorViewComponent">
-        <h3>MonitorList</h3>
+        <h3>Monitors View</h3>
         {gridNodes}
       </div>
     )
