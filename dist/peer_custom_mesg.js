@@ -46,9 +46,13 @@
 
 	'use strict';
 	
-	/* main.js */
+	var PeerCustomMesg = __webpack_require__(1);
 	
-	window.PeerCustomMesg = __webpack_require__(1);
+	if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+	  module.exports = PeerCustomMesg;
+	} else {
+	  window.PeerCustomMesg = PeerCustomMesg;
+	}
 
 /***/ },
 /* 1 */
@@ -1130,8 +1134,6 @@
 	    key: "write",
 	    value: function write(data) {
 	      if (data === null || data === undefined) throw "data should be specified";
-	      // todo: validation (falsy check?)
-	      //
 	      this.data.response = data;
 	    }
 	  }, {
