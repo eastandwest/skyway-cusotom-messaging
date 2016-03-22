@@ -88,7 +88,7 @@ var CameraVideoComponent = React.createClass({
     return (
       <div className="cameraVideoComponent">
         <div># of connecting monitors : {this.state.num_monitors}</div>
-        <div class="embed-responsive embed-responsive-4by3">
+        <div className="embed-responsive embed-responsive-4by3">
           <video className="video-component embed-responsive-item" width="100%" src={this.state.url} autoPlay />
         </div>
       </div>

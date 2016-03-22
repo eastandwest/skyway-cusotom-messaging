@@ -62,7 +62,7 @@ var MonitorVideoComponent = React.createClass({
           </button>
         </p>
         <div>
-          <div class="embed-responsive embed-responsive-4by3">
+          <div className="embed-responsive embed-responsive-4by3">
             <video className="video-component embed-responsive-item" data-status={this.state.video_status} src={this.state.streaming_url} width="100%" autoPlay />
           </div>
         </div>
