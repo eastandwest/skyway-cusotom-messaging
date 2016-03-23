@@ -1,9 +1,10 @@
 var React = require('react');
 
 require('../css/default.css');
+require('react.backbone')
 require('webrtc-adapter');
 
-var CameraVideoComponent = React.createClass({
+var CameraVideoComponent = React.createBackboneClass({
   getInitialState(){
     return {
       "num_monitors" : 0,
@@ -14,13 +15,14 @@ var CameraVideoComponent = React.createClass({
   },
   componentDidMount(){
     this.startVideo();
-    this.props.camera.on("peer:stream", (obj) => {
+    this.camera = this.getModel();
+
+    this.camera.on("peer:stream", (obj) => {
       if(obj.param === "start") {
         this.startCall(obj.monitorID);
       } else {
         this.stopCall(obj.monitorID);
       }
-      console.log(obj);
     });
   },
   startVideo() {
@@ -34,13 +36,13 @@ var CameraVideoComponent = React.createClass({
       });
   },
   startCall(monitorID) {
-    var call = this.props.peer.call(monitorID, this.state.media_stream);
+    var call = this.camera.peer.call(monitorID, this.state.media_stream);
     this.state.callObjs[monitorID] = call;
     this.countNumMonitors();
 
     // when the close for peer's media channel is detected
     // assuming that peer is closed because of browser close etc.
-    // however, it does not work for firefox ...
+    // however, it does not work with firefox ...
     call.on('close', () => {
       this.stopCall(monitorID);
     });
@@ -74,5 +76,3 @@ var CameraVideoComponent = React.createClass({
 
 
 module.exports = CameraVideoComponent;
-
-

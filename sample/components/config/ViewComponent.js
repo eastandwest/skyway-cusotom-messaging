@@ -2,13 +2,10 @@ var React = require('react')
   , ConfigFormComponent = require('./FormComponent')
 
 var ConfigViewComponent = React.createClass({
-  componentDidMount(){
-    console.log(this.props.model);
-  },
   render() {
     return (
       <div className="configViewComponent">
-        <ConfigFormComponent camera={this.props.camera} />
+        <ConfigFormComponent model={this.props.model} />
       </div>
     );
   }

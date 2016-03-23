@@ -2,14 +2,11 @@ var React = require('react')
 require('react.backbone')
 
 var ConfigFormComponent = React.createBackboneClass({
-  mixins: [
-    React.BackboneMixin("camera")
-  ],
   getInitialState(){
     return {
-      "name": this.props.camera.get("name"),
-      "location": this.props.camera.get("location"),
-      "passcode": this.props.camera.get("passcode"),
+      "name": this.getModel().get("name"),
+      "location": this.getModel().get("location"),
+      "passcode": this.getModel().get("passcode"),
     }
   },
   componentDidMount(){
@@ -27,7 +24,7 @@ var ConfigFormComponent = React.createBackboneClass({
     e.preventDefault();
     var formObj = e.target;
 
-    this.props.camera.save({"id": 1, "name": this.state.name, "location": this.state.location, "passcode": this.state.passcode });
+    this.getModel().save({"id": 1, "name": this.state.name, "location": this.state.location, "passcode": this.state.passcode });
   },
   render() {
     return (

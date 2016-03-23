@@ -11,13 +11,11 @@ require('../css/default.css');
 var MonitorViewComponent = React.createBackboneClass({
   // create 3 cols arr
   createGridArray(monitors) {
-    console.log(monitors);
     var arr = [], subarr = new Array();
     for(var i = 0, len = monitors.length; i < len; i++) {
       // push monitor into subarr
       var monitor = monitors.models[i];
       subarr.push(monitor);
-      console.log('subarr', subarr);
 
       // it it reaches 3 cols or final
       if( (i % 3) === 2 || len === (i + 1) ) {

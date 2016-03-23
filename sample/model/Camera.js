@@ -1,27 +1,45 @@
 var Backbone = require('backbone')
   , PeerCustomMesg = require('../../lib/index')
+
 Backbone.LocalStorage = require('backbone.localstorage')
 
 
-var CameraModel = Backbone.Model.extend({
+var Camera = Backbone.Model.extend({
   localStorage: new Backbone.LocalStorage("PCM"),
   defaults: {
     id: 1,
-    name: "ken",
-    location: "hoge",
-    passcode: "123456"
+    name: "",
+    location: "",
+    passcode: ""
   },
   initialize() {
     this.peer = null;
     this.pcm = null;
-    this.fetch({"id": 1}); // read attributes from localStorage
+
+    this.mypeerid = "camera"+this.makeRandom(10000000000);
+    console.log(this.mypeerid);
+    this.set({"mypeerid": this.mypeerid});
+
+    // to read attributes from localStrage
+    this.fetch({"id": 1});
   },
-  setPeer(peer) {
-    this.peer = peer;
-    this.pcm = new PeerCustomMesg(this.peer);
-    this.setPCMHandler();
+  makeRandom(seed) {
+    return Math.floor(Math.random()*seed);
   },
-  setPCMHandler() {
+  startPeer(obj) {
+    console.log(this.mypeerid);
+    this.peer = new Peer(this.mypeerid, obj);
+
+    // when connection to skyway server established.
+    this.peer.on("open", (id) => {
+      this.peerid = id;
+      this.pcm = new PeerCustomMesg(this.peer);
+      this.handlePCM();
+
+      this.trigger("ready");
+    });
+  },
+  handlePCM() {
     this.pcm.on("request", (req, res) => {
       console.log(req, res);
       if(req.method === "GET") {
@@ -31,7 +49,9 @@ var CameraModel = Backbone.Model.extend({
           res.end();
           break;
         case "/livestream":
+          // to notice view component that request for livestream come
           this.trigger("peer:stream", {"monitorID": res.dst, "param": req.parameter});
+
           res.write("ok");
           res.end();
           break;
@@ -51,4 +71,4 @@ var CameraModel = Backbone.Model.extend({
 
 
 
-module.exports = CameraModel;
+module.exports = Camera;

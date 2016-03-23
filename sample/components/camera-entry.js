@@ -6,23 +6,13 @@ var React = require('react')
   , ReactDOM = require('react-dom')
   , CameraView = require('./camera/ViewComponent')
   , ConfigView = require('./config/ViewComponent')
-  , CameraModel = require('../model/Camera')
+  , Camera = require('../model/Camera')
 
-var makeRandom = (seed) => {
-  return Math.floor(Math.random(seed)*seed);
-};
-var myid = "camera" + makeRandom(10000000000);
-
-var peer = new Peer(myid, {"key": "dbe1b9ed-5a52-4488-a592-c451daf74206"});
-
-peer.on('open', (id) => {
-  console.log(id);
-
-  var cameraModel = new CameraModel();
-  cameraModel.setPeer(peer);
-
-  var cameraView = CameraView({"camera": cameraModel, "peer": peer})
-    , configView = ConfigView({"camera": cameraModel});
+var camera = new Camera();
+camera.startPeer({"key": "dbe1b9ed-5a52-4488-a592-c451daf74206"});
+camera.on('ready', () => {
+  var cameraView = CameraView({"model": camera})
+  var configView = ConfigView({"model": camera});
 
 
   ReactDOM.render(configView, document.getElementById("config-view"));
