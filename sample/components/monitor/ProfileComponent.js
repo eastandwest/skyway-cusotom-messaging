@@ -1,26 +1,17 @@
 var React = require('react')
 
-var MonitorProfileComponent = React.createClass({
-  getInitialState() {
-    return {
-      name: "",
-      location: ""
-    }
-  },
-  componentDidMount() {
-    this.props.pcm.get(this.props.cameraId, '/profile').then((data) => {
-      console.log(data.response);
-      this.setState({"name": data.response.name, "location": data.response.location});
-    });
-  },
+require('react.backbone')
 
+var MonitorProfileComponent = React.createBackboneClass({
   render() {
+    var monitor = this.getModel();
     return (
       <div className="monitorProfileComponent">
         <table className="table">
           <tbody>
-            <tr><td><strong>name</strong></td><td>{this.state.name}</td></tr>
-            <tr><td><strong>location</strong></td><td>{this.state.location}</td></tr>
+            <tr><td><strong>peerid of camera</strong></td><td>{monitor.get('camPeerID')}</td></tr>
+            <tr><td><strong>owner name</strong></td><td>{monitor.get('name')}</td></tr>
+            <tr><td><strong>location</strong></td><td>{monitor.get('location')}</td></tr>
           </tbody>
         </table>
       </div>
@@ -29,3 +20,4 @@ var MonitorProfileComponent = React.createClass({
 });
 
 module.exports = MonitorProfileComponent;
+

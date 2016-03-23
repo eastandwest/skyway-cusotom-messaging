@@ -3,57 +3,32 @@ var React = require('react');
 require('../css/default.css');
 require('webrtc-adapter');
 
-// navigator._getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-
 var CameraVideoComponent = React.createClass({
   getInitialState(){
     return {
       "num_monitors" : 0,
       "media_stream": null,
+      "url": "",
       "callObjs": {}
     }
   },
   componentDidMount(){
-    this.props.pcm.on("request", this.setPCMHanlder);
-  },
-  setPCMHanlder(req, res) {
-    if(req.method === "GET" && req.resource === "/livestream") {
-      var monitorID = res.dst;
-
-      if(req.parameter === "start") {
-        res.write("ok");
-        res.end();
-
-        if(!this.state.media_stream) {
-          try{
-            this.startVideo(monitorID, () => {
-              res.write("ok");
-              res.end();
-            });
-          } catch(err) {
-            res.status(404);
-            res.write(err.toString());
-            res.end();
-          }
-        } else {
-          this.startCall(monitorID);
-        }
-      } else if(req.parameter === "stop") {
-        res.write("ok");
-        res.end();
-
-        this.stopCall(monitorID);
+    this.startVideo();
+    this.props.camera.on("peer:stream", (obj) => {
+      if(obj.param === "start") {
+        this.startCall(obj.monitorID);
+      } else {
+        this.stopCall(obj.monitorID);
       }
-    }
+      console.log(obj);
+    });
   },
-  startVideo(monitorID, callback) {
+  startVideo() {
       navigator.getUserMedia({"video": true, "audio": false}, (stream) => {
         this.setState({
           "media_stream": stream,
           "url": URL.createObjectURL(stream)
         });
-        callback();
-        this.startCall(monitorID);
       }, (err) => {
         throw err;
       });

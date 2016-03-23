@@ -5,9 +5,13 @@ if(process.env.NODENV==="sample") {
 var React = require('react')
   , ReactDOM = require('react-dom')
   , MonitorView = require('./monitor/ViewComponent')
+  , Monitors = require('../model/Monitors')
 
 
-var monitorView = MonitorView({"apikey": "dbe1b9ed-5a52-4488-a592-c451daf74206"});
 
+var monitors = new Monitors();
+monitors.startPeer({"key": "dbe1b9ed-5a52-4488-a592-c451daf74206"});
 
-ReactDOM.render(monitorView, document.getElementById("monitor-list"));
+var monitorView = MonitorView({"collection": monitors});
+
+ReactDOM.render(monitorView, document.getElementById("monitor-view"));
