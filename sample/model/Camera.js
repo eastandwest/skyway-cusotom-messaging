@@ -85,11 +85,17 @@ var Camera = Backbone.Model.extend({
           res.end();
           break;
         case "/livestream":
-          // to notice view component that request for livestream come
-          this.trigger("peer:stream", {"monitorID": res.dst, "param": req.parameter});
-
-          res.write("ok");
-          res.end();
+          // check passcode matches with this, plz notice that passcode in request is hashed
+          if( req.parameter.passcode === md5( this.get("passcode") ) ) {
+            res.write("ok");
+            res.end();
+            // to notice view component that request for livestream come
+            this.trigger("peer:stream", {"monitorID": res.dst, "param": req.parameter.state});
+          } else {
+            res.status(400);
+            res.write("Passcode does not match with mine.");
+            res.end();
+          }
           break;
         default:
           res.status(404);

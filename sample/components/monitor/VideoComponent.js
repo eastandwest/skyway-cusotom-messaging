@@ -1,7 +1,9 @@
 var React = require('react')
+  , md5 = require('md5')
 
 require('react.backbone')
 require('../css/default.css')
+
 
 var MonitorVideoComponent = React.createBackboneClass({
   getInitialState() {
@@ -29,7 +31,7 @@ var MonitorVideoComponent = React.createBackboneClass({
         // answer to camera's offer
         call.answer();
 
-        // if WebRTC video stream comes.
+        // if WebRTC video stream arrives.
         call.on('stream', (stream) => {
           this.setState({"btn_class": "btn btn-warning", "streaming_url": URL.createObjectURL(stream), "video_status": "playing"});
           this.state.btnNode.disabled = "";
@@ -37,7 +39,7 @@ var MonitorVideoComponent = React.createBackboneClass({
           this.state.btnNode.innerHTML = "<span class='glyphicon glyphicon-stop'></span> stop";
         });
 
-        // when WebRTC video stream closed
+        // when WebRTC video stream is closed
         call.on('close', () => {
           this.setState({"btn_class": "btn btn-success", "streaming_url": "", "video_status": "stopped"});
           this.state.btnNode.disabled = "";
@@ -50,32 +52,48 @@ var MonitorVideoComponent = React.createBackboneClass({
   // handler for watch button
   //
   handleWatchBtnClick(e) {
-    this.state.btnNode = e.currentTarget;
-    if(this.state.btnNode.dataset.type === "watch") {
-      var err = this.getModel().preValidate("passcode", this.state.passcode);
+    // check format of pass code is valid
+    let err = this.getModel().preValidate("passcode", this.state.passcode);
 
-      if(!err) {
-        this.props.pcm.get(this.camPeerID, '/livestream', 'start').then((data) => {
-          this.setState({"error_msg": ""});
-          this.setState({"btn_class": "btn btn-success", "video_status": "connecting"});
-          this.state.btnNode.textContent = "connecting...";
-          this.state.btnNode.dataset.type = "connecting";
-          this.state.btnNode.disabled = "disabled";
-        });
-      } else {
-        this.setState({"error_msg": err});
-      }
+    if(!err) {
+      // when passcode is valid, store pass code to model
+      this.setState({"error_msg": ""});
+      this.getModel().set("passcode", this.state.passcode);
     } else {
-      this.props.pcm.get(this.camPeerID, '/livestream', 'stop').then((data) => {
+      // when passcode is invalid show up error message. then return;
+      this.setState({"error_msg": err});
+      return;
+    }
+
+    // store this button node to React's status. since it is used for call.on("stream close")
+    this.state.btnNode = e.currentTarget
+    let _hashed_passcode = md5(this.getModel().get("passcode"));
+
+    // send PCM request with /livestream. param.state will be changed based on btnNode state(type=watch or not)
+    if(this.state.video_status === "stopped") {
+      this.props.pcm.get(this.camPeerID, '/livestream', {"state": "start", "passcode": _hashed_passcode}).then((data) => {
+        this.setState({"btn_class": "btn btn-success", "video_status": "connecting"});
+        this.state.btnNode.textContent = "connecting...";
+        this.state.btnNode.dataset.type = "connecting";
+        this.state.btnNode.disabled = "disabled";
+      }).catch((err) => {
+        console.log(err);
+        this.setState({"error_msg": err});
+      });
+    } else if(this.state.video_status === "playing") {
+      this.props.pcm.get(this.camPeerID, '/livestream', {"state": "stop", "passcode": _hashed_passcode}).then((data) => {
         this.setState({"btn_class": "btn btn-warning", "video_status": "disconnecting"});
         this.state.btnNode.textContent = "disconnecting...";
         this.state.btnNode.dataset.type = "disconnecting";
         this.state.btnNode.disabled = "disabled";
-      });
+      }).catch((err) => {
+        this.setState({"error_msg": err});
+      })
+    } else {
+      throw "video status should be playing or stopped when calling handleWatchBtnClick";
     }
   },
   handlePasscodeChange(e) {
-    console.log(0);
     this.setState({"passcode": e.target.value});
   },
   // render
@@ -83,20 +101,20 @@ var MonitorVideoComponent = React.createBackboneClass({
   render() {
     return (
       <div className="monitorVideoComponent">
-        <p className="text-center">
         {(() => { if(!!this.state.error_msg) return (
           <div className="alert alert-danger">{this.state.error_msg}</div>
-          )})()}
-          <label>Passcode</label>
+        )})()}
+        <p className="text-center">
+         <label>Passcode</label>
           <input type="text" name="passcode" value={this.state.passcode} onChange={this.handlePasscodeChange} />
           <br />
-          <button className={this.state.btn_class} onClick={this.handleWatchBtnClick} data-type="watch">
+          <button className={this.state.btn_class} onClick={this.handleWatchBtnClick}>
             <span className="glyphicon glyphicon-play"></span> Watch
           </button>
         </p>
         <div>
           <div className="embed-responsive embed-responsive-4by3">
-            <video className="video-component embed-responsive-item" data-status={this.state.video_status} src={this.state.streaming_url} width="100%" autoPlay />
+            <video className="video-component embed-responsive-item" src={this.state.streaming_url} width="100%" autoPlay />
           </div>
         </div>
       </div>
