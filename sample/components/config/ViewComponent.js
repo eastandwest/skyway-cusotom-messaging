@@ -5,7 +5,7 @@ var ConfigViewComponent = React.createClass({
   render() {
     return (
       <div className="configViewComponent">
-        <ConfigFormComponent model={this.props.model} />
+        <ConfigFormComponent model={this.props.model} appState={this.props.appState}/>
       </div>
     );
   }

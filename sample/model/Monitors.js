@@ -34,7 +34,7 @@ var Monitors = Backbone.Collection.extend({
   getCameraProfile(camPeerID){
     this.pcm.get(camPeerID, '/profile').then((data) => {
       var profile = data.response;
-      this.add({"camPeerID": camPeerID, "name": profile.name, "location": profile.location});
+      this.add({"camPeerID": camPeerID, "name": profile.name, "location": profile.location, "passcode": "000000"});
     }).catch((err) => {
       throw err;
     });

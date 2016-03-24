@@ -32,8 +32,8 @@ switch(process.env.NODE_ENV) {
     break;
   case "sample":
     _entry = {
-           "sample-monitor" : "./sample/components/monitor-entry.js",
-           "sample-camera" : "./sample/components/camera-entry.js"
+           "sample-monitor" : "./sample/monitor-entry.js",
+           "sample-camera" : "./sample/camera-entry.js"
     };
     _devtool = 'source-map';
     _output = {

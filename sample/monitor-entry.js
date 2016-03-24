@@ -1,11 +1,11 @@
 if(process.env.NODENV==="sample") {
-  require("../monitor.html"); // this includes html file in watcher list.
+  require("./monitor.html"); // this includes html file in watcher list.
 }
 
 var React = require('react')
   , ReactDOM = require('react-dom')
-  , MonitorView = require('./monitor/ViewComponent')
-  , Monitors = require('../model/Monitors')
+  , MonitorView = require('./components/monitor/ViewComponent')
+  , Monitors = require('./model/Monitors')
 
 
 

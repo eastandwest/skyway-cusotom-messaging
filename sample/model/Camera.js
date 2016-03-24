@@ -1,7 +1,11 @@
 var Backbone = require('backbone')
   , PeerCustomMesg = require('../../lib/index')
+  , _ = require('underscore')
+  , validation = require('backbone-validation')
+  , md5 = require('md5')
 
 Backbone.LocalStorage = require('backbone.localstorage')
+_.extend(Backbone.Model.prototype, validation.mixin);
 
 
 var Camera = Backbone.Model.extend({
@@ -10,7 +14,23 @@ var Camera = Backbone.Model.extend({
     id: 1,
     name: "",
     location: "",
-    passcode: ""
+    passcode: "",
+    camera_id: ""
+  },
+  validation: {
+    name: {
+      required: true,
+      rangeLength: [4, 32]
+          },
+    location: {
+      required: true,
+      rangeLength: [4, 32]
+          },
+    passcode: {
+      required: true,
+      pattern: /^[0-9]{6}/,
+      msg: "Passcode must be 6 length digit"
+              }
   },
   initialize() {
     this.peer = null;
@@ -22,6 +42,14 @@ var Camera = Backbone.Model.extend({
 
     // to read attributes from localStrage
     this.fetch({"id": 1});
+
+    // when 1st access, allocate camera_id
+    if(this.get("camera_id") === "") {
+      let _camera_id = md5(Date.now().toString() + this.makeRandom(100000));
+      this.save("camera_id", _camera_id);
+    }
+
+    this.handleAttrChange();
   },
   makeRandom(seed) {
     return Math.floor(Math.random()*seed);
@@ -38,6 +66,14 @@ var Camera = Backbone.Model.extend({
 
       this.trigger("ready");
     });
+  },
+  handleAttrChange() {
+    this.on("all", (method, model) => {
+      console.log(method, model);
+    });
+    // this.on("error", (err) => {
+    //   console.log("error - ", err);
+    // });
   },
   handlePCM() {
     this.pcm.on("request", (req, res) => {

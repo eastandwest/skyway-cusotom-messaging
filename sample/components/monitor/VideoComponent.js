@@ -9,11 +9,14 @@ var MonitorVideoComponent = React.createBackboneClass({
       video_status: "stopped",
       streaming_url: "",
       btnNode: null,
-      btn_class: "btn btn-success"
+      btn_class: "btn btn-success",
+      passcode: "",
+      error_msg: ""
     }
   },
   componentDidMount() {
     this.camPeerID = this.getModel().get('camPeerID');
+    this.setState({"passcode": this.getModel().get('passcode')});
 
     this.handleCall();
   },
@@ -49,12 +52,19 @@ var MonitorVideoComponent = React.createBackboneClass({
   handleWatchBtnClick(e) {
     this.state.btnNode = e.currentTarget;
     if(this.state.btnNode.dataset.type === "watch") {
-      this.props.pcm.get(this.camPeerID, '/livestream', 'start').then((data) => {
-        this.setState({"btn_class": "btn btn-success", "video_status": "connecting"});
-        this.state.btnNode.textContent = "connecting...";
-        this.state.btnNode.dataset.type = "connecting";
-        this.state.btnNode.disabled = "disabled";
-      });
+      var err = this.getModel().preValidate("passcode", this.state.passcode);
+
+      if(!err) {
+        this.props.pcm.get(this.camPeerID, '/livestream', 'start').then((data) => {
+          this.setState({"error_msg": ""});
+          this.setState({"btn_class": "btn btn-success", "video_status": "connecting"});
+          this.state.btnNode.textContent = "connecting...";
+          this.state.btnNode.dataset.type = "connecting";
+          this.state.btnNode.disabled = "disabled";
+        });
+      } else {
+        this.setState({"error_msg": err});
+      }
     } else {
       this.props.pcm.get(this.camPeerID, '/livestream', 'stop').then((data) => {
         this.setState({"btn_class": "btn btn-warning", "video_status": "disconnecting"});
@@ -64,12 +74,22 @@ var MonitorVideoComponent = React.createBackboneClass({
       });
     }
   },
+  handlePasscodeChange(e) {
+    console.log(0);
+    this.setState({"passcode": e.target.value});
+  },
   // render
   //
   render() {
     return (
       <div className="monitorVideoComponent">
         <p className="text-center">
+        {(() => { if(!!this.state.error_msg) return (
+          <div className="alert alert-danger">{this.state.error_msg}</div>
+          )})()}
+          <label>Passcode</label>
+          <input type="text" name="passcode" value={this.state.passcode} onChange={this.handlePasscodeChange} />
+          <br />
           <button className={this.state.btn_class} onClick={this.handleWatchBtnClick} data-type="watch">
             <span className="glyphicon glyphicon-play"></span> Watch
           </button>
