@@ -2,6 +2,7 @@ var Backbone = require('backbone')
   , Monitor = require('./Monitor')
   , PeerCustomMesg = require('../../lib/index')
 
+
 var Monitors = Backbone.Collection.extend({
   model: Monitor,
   initialize(){
@@ -33,8 +34,28 @@ var Monitors = Backbone.Collection.extend({
   // retrieve profile data from camera then add model
   getCameraProfile(camPeerID){
     this.pcm.get(camPeerID, '/profile').then((data) => {
-      var profile = data.response;
-      this.add({"camPeerID": camPeerID, "name": profile.name, "location": profile.location, "passcode": "000000"});
+      let profile = data.response
+        , _data = {
+          "camera_id": profile.camera_id,
+          "camPeerID": camPeerID,
+          "name": profile.name,
+          "location": profile.location,
+          "passcode": "000000"
+        }
+        , _monitor = new Monitor()
+
+      // do validation process
+      let _err = _monitor.preValidate(_data);
+      if(!_err) {
+        // _data is valid
+        _monitor.set(_data);
+        _monitor.syncPasscodeWithLDB();
+        this.add(_monitor);
+      } else {
+        console.warn("validation for Monitor failed", _err);
+      }
+
+
     }).catch((err) => {
       throw err;
     });

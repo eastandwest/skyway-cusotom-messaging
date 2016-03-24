@@ -58,7 +58,7 @@ var MonitorVideoComponent = React.createBackboneClass({
     if(!err) {
       // when passcode is valid, store pass code to model
       this.setState({"error_msg": ""});
-      this.getModel().set("passcode", this.state.passcode);
+      this.getModel().setPasscode(this.state.passcode);
     } else {
       // when passcode is invalid show up error message. then return;
       this.setState({"error_msg": err});

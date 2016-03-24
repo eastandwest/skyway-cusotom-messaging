@@ -9,7 +9,7 @@ _.extend(Backbone.Model.prototype, validation.mixin);
 
 
 var Camera = Backbone.Model.extend({
-  localStorage: new Backbone.LocalStorage("PCM"),
+  localStorage: new Backbone.LocalStorage("PCMCamera"),
   defaults: {
     id: 1,
     name: "",
@@ -81,7 +81,7 @@ var Camera = Backbone.Model.extend({
       if(req.method === "GET") {
         switch(req.resource) {
         case "/profile":
-          res.write({"name": this.get("name"), "location": this.get("location")});
+          res.write({"name": this.get("name"), "location": this.get("location"), "camera_id": this.get("camera_id")});
           res.end();
           break;
         case "/livestream":
