@@ -57,7 +57,7 @@ var Monitors = Backbone.Collection.extend({
 
 
     }).catch((err) => {
-      throw err;
+      console.log( "getCameraProfile - [", camPeerID, "]", err);
     });
   }
 });

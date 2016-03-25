@@ -6,10 +6,17 @@ var CameraAppState = Backbone.Model.extend({
     "camera": "idle"
   },
   initialize() {
-    this.on("change:config", (method, model) => {
+    this.on("change:config", (model, method) => {
+      console.log("change:config - ", method);
       var state = this.get("config");
       this.trigger("config:"+state);
       this.set({"config": "idle"});
+    });
+    this.on("change:camera", (model, method) => {
+      console.log("change:camera", method, model);
+      var state = this.get("camera");
+      this.trigger("camera:"+state);
+      this.set({"camera": "idle"});
     });
   }
 });

@@ -19,7 +19,7 @@ var CameraViewComponent = React.createClass({
               <h3 className="panel-title">Local Camera View</h3>
             </div>
             <div className="panel-body">
-            <CameraProfileComponent model={this.props.model} />
+            <CameraProfileComponent model={this.props.model} appState={this.props.appState} />
             <CameraVideoComponent model={this.props.model}  />
             </div>
           </div>

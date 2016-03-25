@@ -35,17 +35,23 @@ var Camera = Backbone.Model.extend({
   initialize() {
     this.peer = null;
     this.pcm = null;
+    this.stored = false;
 
     this.mypeerid = "camera"+this.makeRandom(10000000000);
-    console.log(this.mypeerid);
     this.set({"mypeerid": this.mypeerid});
 
     // to read attributes from localStrage
-    this.fetch({"id": 1});
+    this.fetch({"id": 1}).then((res) => {
+      this.stored = true;
+      this.trigger("stored:checked", {"stored": this.stored});
+    }, (err) => {
+      this.trigger("stored:checked", {"stored": this.stored});
+    });
 
     // when 1st access, allocate camera_id
     if(this.get("camera_id") === "") {
       let _camera_id = md5(Date.now().toString() + this.makeRandom(100000));
+      this.set("camera_id", _camera_id);
       this.save("camera_id", _camera_id);
     }
 
@@ -55,7 +61,6 @@ var Camera = Backbone.Model.extend({
     return Math.floor(Math.random()*seed);
   },
   startPeer(obj) {
-    console.log(this.mypeerid);
     this.peer = new Peer(this.mypeerid, obj);
 
     // when connection to skyway server established.
@@ -68,12 +73,6 @@ var Camera = Backbone.Model.extend({
     });
   },
   handleAttrChange() {
-    this.on("all", (method, model) => {
-      console.log(method, model);
-    });
-    // this.on("error", (err) => {
-    //   console.log("error - ", err);
-    // });
   },
   handlePCM() {
     this.pcm.on("request", (req, res) => {
@@ -81,8 +80,16 @@ var Camera = Backbone.Model.extend({
       if(req.method === "GET") {
         switch(req.resource) {
         case "/profile":
-          res.write({"name": this.get("name"), "location": this.get("location"), "camera_id": this.get("camera_id")});
-          res.end();
+          if(!!this.get("passcode")) {
+            // already configured, respond profile
+            res.write({"name": this.get("name"), "location": this.get("location"), "camera_id": this.get("camera_id")});
+            res.end();
+          } else {
+            // not configured yet, then send 404 response
+            res.status(404);
+            res.write("Not configured yet.");
+            res.end();
+          }
           break;
         case "/livestream":
           // check passcode matches with this, plz notice that passcode in request is hashed
