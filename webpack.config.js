@@ -21,7 +21,7 @@ switch(process.env.NODE_ENV) {
     break;
  case "devtest":
     _entry = {
-           "unittest" : "./test/unittest_entry.js"
+           "unittest" : "mocha!./test/unittest_entry.js"
     };
     _output = {
       path: path.join(__dirname, "test"),
