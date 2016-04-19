@@ -93,7 +93,7 @@ $ npm run test
 
 ```
 $ npm run devtest
-$ open http://localhost:8081/test.html
+$ open http://localhost:8081/test/unittest.build
 ```
 
 # sample site
